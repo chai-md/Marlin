@@ -109,8 +109,8 @@
 // Misc
 //
 #define BEEPER_PIN                          PB0
-//#define LED_PIN                           PD3
-//#define POWER_LOSS_PIN                    PG2   // PG4 PW_DET
+#define LED_PIN                           PD3
+#define POWER_LOSS_PIN                    PG2   // PG4 PW_DET
 
 #ifndef FIL_RUNOUT_PIN
   #define FIL_RUNOUT_PIN                    PA15  // MT_DET
