@@ -56,7 +56,7 @@
 //
 #define X_STOP_PIN                          PG10
 #define Y_STOP_PIN                          PA12
-#define Z_STOP_PIN                          PG9
+#define Z_STOP_PIN                          PA14  //OK
 
 //
 // Steppers
@@ -101,16 +101,19 @@
 //
 // Fans
 //
-#define CONTROLLER_FAN_PIN                  PD6   // BOARD FAN
-#define FAN_PIN                             PG13  // FAN
-#define FAN_PIN_2                           PG14
+//#define CONTROLLER_FAN_PIN                  PD6   // BOARD FAN
+//#define FAN_PIN                             PG13  // FAN
+//#define FAN_PIN_2                           PG14
+#define CONTROLLER_FAN_PIN                  -1     // BOARD FAN
+#define FAN_PIN                             PG13   // FAN PG13:SW_PWM_is_OK
+#define FAN_PIN_2                           PG14   // Hotend Fan -- PG14:OK
 
 //
 // Misc
 //
 #define BEEPER_PIN                          PB0
-#define LED_PIN                           PD3
-#define POWER_LOSS_PIN                    PG2   // PG4 PW_DET
+#define LED_PIN                             PD6  // PD6 
+//#define POWER_LOSS_PIN                    PG2   // PG4 PW_DET
 
 #ifndef FIL_RUNOUT_PIN
   #define FIL_RUNOUT_PIN                    PA15  // MT_DET
