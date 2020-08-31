@@ -750,7 +750,8 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 810.6 }  // 1/32 microstep
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 320, 320, 1600, 1621.2 }  // 1/64 microstep
+//#define DEFAULT_AXIS_STEPS_PER_UNIT   { 320, 320, 1600, 1621.2 }  // 1/64 microstep
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 320, 320, 1600, 3242 }  // XYZ:1/64 E:1/128 microstep
 
 /**
  * Default Max Feed Rate (mm/s)
