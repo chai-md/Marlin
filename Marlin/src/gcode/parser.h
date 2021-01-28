@@ -282,7 +282,7 @@ public:
 
   // Code value for use as time
   static inline millis_t value_millis() { return value_ulong(); }
-  static inline millis_t value_millis_from_seconds() { return (millis_t)(value_float() * 1000); }
+  static inline millis_t value_millis_from_seconds() { return (millis_t)SEC_TO_MS(value_float()); }
 
   // Reduce to fewer bits
   static inline int16_t value_int() { return (int16_t)value_long(); }
@@ -329,6 +329,10 @@ public:
 
   #endif
 
+  static inline bool using_inch_units() { return mm_to_linear_unit(1.0f) != 1.0f; }
+
+  #define IN_TO_MM(I)        ((I) * 25.4f)
+  #define MM_TO_IN(M)        ((M) / 25.4f)
   #define LINEAR_UNIT(V)     parser.mm_to_linear_unit(V)
   #define VOLUMETRIC_UNIT(V) parser.mm_to_volumetric_unit(V)
 
