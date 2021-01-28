@@ -25,7 +25,9 @@
 
 #include HAL_PATH(.,HAL.h)
 
-#ifdef SERIAL_PORT_2
+#ifdef SERIAL_PORT_3
+  #define NUM_SERIAL 3
+#elif SERIAL_PORT_2
   #define NUM_SERIAL 2
 #else
   #define NUM_SERIAL 1

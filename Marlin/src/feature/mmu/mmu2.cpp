@@ -696,6 +696,11 @@ static void mmu2_not_responding() {
     set_runout_valid(false);
 
     if (index != extruder) {
+
+      // test
+      filament_ramming();
+      // test
+
       DISABLE_AXIS_E0();
       ui.status_printf_P(0, GET_TEXT(MSG_MMU2_LOADING_FILAMENT), int(index + 1));
       command(MMU_CMD_T0 + index);
