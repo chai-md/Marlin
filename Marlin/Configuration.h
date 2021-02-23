@@ -117,12 +117,6 @@
 #define SERIAL_PORT_2 -1
 
 /**
- * Select a 3rd serial port on the board to use for communication with the host.
- * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
- */
-#define SERIAL_PORT_3 3
-
-/**
  * This setting determines the communication speed of the printer.
  *
  * 250000 works in most cases, but you might try a lower speed if
