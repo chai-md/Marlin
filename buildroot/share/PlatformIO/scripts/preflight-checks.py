@@ -1,56 +1,67 @@
 #
 # preflight-checks.py
-# Script to check for common issues prior to compiling
+# Check for common issues prior to compiling
 #
-import os
-import re
+import os,re,sys
 Import("env")
 
-def get_envs_for_board(board):
-    if board.startswith("BOARD_"):
-        board = board[6:]
-    with open(os.path.join("Marlin", "src", "pins", "pins.h"),"r") as f:
-        board_found = ""
-        r=re.compile(r"if\s+MB\((.+)\)")
-        for line in f.readlines():
-            mbs = r.findall(line)
-            if mbs:
-                board_found = board if board in re.split(r",\s*", mbs[0]) else ""
-            if board_found and "#include " in line and "env:" in line:
-                return re.findall(r"env:\w+", line)
-    return []
+def get_envs_for_board(board, envregex):
+	with open(os.path.join("Marlin", "src", "pins", "pins.h"), "r") as file:
+		r = re.compile(r"if\s+MB\((.+)\)")
+		if board.startswith("BOARD_"):
+			board = board[6:]
 
-def check_envs(build_env, base_envs, config):
-    if build_env in base_envs:
-        return True
-    ext = config.get(build_env, 'extends', default=None)
-    if ext:
-        for ext_env in ext:
-            if check_envs(ext_env, base_envs, config):
-                return True
-    return False
+		for line in file:
+			mbs = r.findall(line)
+			if mbs and board in re.split(r",\s*", mbs[0]):
+				line = file.readline()
+				found_envs = re.match(r"\s*#include .+" + envregex, line)
+				if found_envs:
+					return re.findall(envregex + r"(\w+)", line)
+	return []
+
+def check_envs(build_env, board_envs, config):
+	if build_env in board_envs:
+		return True
+	ext = config.get(build_env, 'extends', default=None)
+	if ext:
+		if isinstance(ext, str):
+			return check_envs(ext, board_envs, config)
+		elif isinstance(ext, list):
+			for ext_env in ext:
+				if check_envs(ext_env, board_envs, config):
+					return True
+	return False
 
 # Sanity checks:
 if 'PIOENV' not in env:
-    raise SystemExit("Error: PIOENV is not defined. This script is intended to be used with PlatformIO")
+	raise SystemExit("Error: PIOENV is not defined. This script is intended to be used with PlatformIO")
 
 if 'MARLIN_FEATURES' not in env:
-    raise SystemExit("Error: this script should be used after common Marlin scripts")
+	raise SystemExit("Error: this script should be used after common Marlin scripts")
 
 if 'MOTHERBOARD' not in env['MARLIN_FEATURES']:
-    raise SystemExit("Error: MOTHERBOARD is not defined in Configuration.h")
+	raise SystemExit("Error: MOTHERBOARD is not defined in Configuration.h")
+
+if sys.platform == 'win32':
+	osregex = r"(?:env|win):"
+elif sys.platform == 'darwin':
+	osregex = r"(?:env|mac|uni):"
+elif sys.platform == 'linux':
+	osregex = r"(?:env|lin|uni):"
+else:
+	osregex = r"(?:env):"
 
 build_env = env['PIOENV']
 motherboard = env['MARLIN_FEATURES']['MOTHERBOARD']
-base_envs = get_envs_for_board(motherboard)
+board_envs = get_envs_for_board(motherboard, osregex)
 config = env.GetProjectConfig()
-result = check_envs("env:"+build_env, base_envs, config)
+result = check_envs(build_env, board_envs, config)
 
 if not result:
-    err = "Error: your selected build environment '%s' is not compatible with MOTHERBOARD=%s in Configuration.h. " \
-          "Please use one of compatible build environments for this board: %s" % \
-          (build_env, motherboard, ",".join([e[4:] for e in base_envs if e.startswith("env:")]))
-    raise SystemExit(err)
+	err = "Error: Build environment '%s' is incompatible with %s. Use one of these: %s" % \
+		  (build_env, motherboard, ",".join([e[4:] for e in board_envs if re.match(r"^" + osregex, e)]))
+	raise SystemExit(err)
 
 #
 # Check for Config files in two common incorrect places
